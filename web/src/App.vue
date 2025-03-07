@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 const fileName = ref("");
 const batchFile = ref("");
 const MAX_FILE_SIZE = 10 * 1000 * 1000;
@@ -24,19 +25,19 @@ function fileDrop(e) {
   console.log("拖拽释放鼠标时");
 
   if (!file) return;
-  if (file.size > this.MAX_FILE_SIZE) {
+  if (file.size > MAX_FILE_SIZE) {
     return alert("文件大小不能超过10M");
   }
-  this.batchFile = file;
-  this.fileName = file.name;
+  batchFile.value = file;
+  fileName.value = file.name;
 }
 // 提交
 function uploadOk() {
-  if (this.batchFile === "") {
+  if (batchFile.value === "") {
     return alert("请选择要上传的文件");
   }
   let data = new FormData();
-  data.append("upfile", this.batchFile);
+  data.append("upfile", batchFile.value);
   // ajax
 }
 </script>
@@ -69,7 +70,9 @@ function uploadOk() {
         >选择文件</label
       >
 
-      <button @click="uploadOk">提交</button>
+      <button style="background-color: antiquewhite" @click="uploadOk">
+        提交
+      </button>
     </div>
   </div>
 </template>
