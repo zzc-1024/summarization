@@ -1,8 +1,23 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { test, testUpload } from "./api/test";
 const fileName = ref("");
 const batchFile = ref("");
 const MAX_FILE_SIZE = 10 * 1000 * 1000;
+
+const currentPage4 = ref(4);
+const pageSize4 = ref(100);
+const small = ref(false);
+const background = ref(false);
+const disabled = ref(false);
+
+const handleSizeChange = (val: number) => {
+  console.log(`${val} items per page`)
+}
+const handleCurrentChange = (val: number) => {
+  console.log(`current page: ${val}`)
+}
+
 const chooseUploadFile = (e) => {
   const file = e.target.files.item(0);
   if (!file) return;
@@ -32,18 +47,35 @@ function fileDrop(e) {
   fileName.value = file.name;
 }
 // 提交
-function uploadOk() {
+async function uploadOk() {
+  const res = await test();
+  console.log(res);
+  // return;
   if (batchFile.value === "") {
     return alert("请选择要上传的文件");
   }
   let data = new FormData();
-  data.append("upfile", batchFile.value);
+  data.append("file", batchFile.value);
   // ajax
+  const fileRes = await testUpload(data);
+  console.log(fileRes);
 }
 </script>
 
 <template>
   <div id="app">
+    <el-pagination
+      v-model:current-page="currentPage4"
+      v-model:page-size="pageSize4"
+      :page-sizes="[100, 200, 300, 400]"
+      :small="small"
+      :disabled="disabled"
+      :background="background"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="400"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
     <div class="content">
       <div class="drag-area" @dragover="fileDragover" @drop="fileDrop">
         <div v-if="fileName" class="file-name">{{ fileName }}</div>
